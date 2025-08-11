@@ -1,91 +1,205 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>TCOS Assistance Chatbot</title>
-    <!-- Tailwind CSS for styling -->
-    <script src="https://cdn.tailwindcss.com"></script>
-    <!-- Google Fonts: Inter -->
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-    <style>
-        /* Custom styles */
-        body {
-            font-family: 'Inter', sans-serif;
-            background-color: #f7fafc; /* Light gray background */
-        }
-        /* Style for the chatbot container to ensure it has a minimum height */
-        #customgpt_chat {
-            min-height: 500px; /* Adjust as needed */
-            border-radius: 0.5rem;
-            overflow: hidden;
-            box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
-        }
-    </style>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>TCOS Assistance Chatbot</title>
+  <meta name="description" content="Ask questions about Terms & Conditions of Supply (TCOS) 2021 with the TCOS Assistance Chatbot." />
+  <style>
+    :root {
+      --bg: #0b1220;
+      --fg: #eaf0ff;
+      --muted: #a9b4cc;
+      --brand: #4f8cff;
+      --card: #121a2b;
+      --card-2: #0e1626;
+      --ring: rgba(79,140,255,.4);
+    }
+    * { box-sizing: border-box; }
+    html, body { height: 100%; }
+    body {
+      margin: 0;
+      font: 16px/1.55 system-ui, -apple-system, Segoe UI, Roboto, "Helvetica Neue", Arial, "Noto Sans", "Apple Color Emoji", "Segoe UI Emoji";
+      color: var(--fg);
+      background:
+        radial-gradient(1200px 600px at 10% -10%, #1a2744 0, transparent 60%),
+        radial-gradient(1200px 600px at 110% 10%, #16233e 0, transparent 60%),
+        var(--bg);
+    }
+    a { color: var(--fg); text-decoration: none; }
+    .container { width: min(1100px, 92vw); margin: 0 auto; }
+    header {
+      position: sticky; top: 0; z-index: 10;
+      backdrop-filter: blur(8px);
+      background: linear-gradient(180deg, rgba(11,18,32,.85), rgba(11,18,32,.55));
+      border-bottom: 1px solid rgba(255,255,255,.05);
+    }
+    .nav { display: flex; align-items: center; justify-content: space-between; padding: 14px 0; }
+    .brand { display: flex; align-items: center; gap: 10px; font-weight: 700; letter-spacing: .2px; }
+    .brand-badge {
+      width: 34px; height: 34px; border-radius: 10px;
+      background: linear-gradient(135deg, var(--brand), #8eaaff);
+      box-shadow: 0 10px 30px rgba(79,140,255,.35);
+    }
+    .btn {
+      display: inline-flex; align-items: center; gap: 8px;
+      padding: 10px 14px; border-radius: 14px; border: 1px solid rgba(255,255,255,.12);
+      background: linear-gradient(180deg, #1a2540, #131d34);
+      color: var(--fg); cursor: pointer; transition: .2s ease; font-weight: 600;
+    }
+    .btn:hover { transform: translateY(-1px); box-shadow: 0 10px 30px rgba(79,140,255,.18); border-color: rgba(79,140,255,.35); }
+
+    .hero { padding: clamp(36px, 7vw, 84px) 0 32px; }
+    .grid { display: grid; grid-template-columns: 1.1fr .9fr; gap: 28px; align-items: center; }
+    @media (max-width: 900px){ .grid { grid-template-columns: 1fr; } }
+
+    .card {
+      background: linear-gradient(180deg, var(--card), var(--card-2));
+      border: 1px solid rgba(255,255,255,.06);
+      border-radius: 18px; padding: clamp(18px, 3vw, 26px);
+      box-shadow: 0 12px 40px rgba(0,0,0,.25);
+    }
+    h1 { font-size: clamp(28px, 4.5vw, 46px); margin: 0 0 10px; line-height: 1.18; }
+    p.lead { color: var(--muted); font-size: clamp(16px, 2.2vw, 18px); margin: 8px 0 16px; }
+    .bullets { display: grid; grid-template-columns: repeat(2, minmax(0,1fr)); gap: 12px 14px; margin-top: 14px; }
+    @media (max-width: 640px){ .bullets { grid-template-columns: 1fr; } }
+    .tick { display: inline-flex; align-items: center; gap: 10px; color: #cdd7ef; }
+    .tick i { width: 22px; height: 22px; border-radius: 8px; background: rgba(79,140,255,.2); border: 1px solid rgba(79,140,255,.35); box-shadow: inset 0 0 0 3px rgba(79,140,255,.12); }
+
+    .panel { padding: 18px; border-radius: 16px; border: 1px dashed rgba(255,255,255,.12); background: rgba(255,255,255,.03); }
+    code.inline { padding: 2px 6px; border-radius: 8px; border: 1px solid rgba(255,255,255,.1); background: rgba(0,0,0,.35); font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace; font-size: .95em; }
+
+    section { padding: 22px 0 54px; }
+    h2 { font-size: clamp(22px, 3.2vw, 28px); margin: 0 0 12px; }
+    .features { display: grid; grid-template-columns: repeat(3, minmax(0,1fr)); gap: 16px; }
+    @media (max-width: 900px){ .features { grid-template-columns: 1fr 1fr; } }
+    @media (max-width: 640px){ .features { grid-template-columns: 1fr; } }
+
+    .kbd { font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono"; background: rgba(255,255,255,.06); padding: 2px 6px; border-radius: 6px; border: 1px solid rgba(255,255,255,.1); }
+
+    footer { padding: 30px 0 60px; color: var(--muted); text-align: center; }
+
+    /* little pulse helper if we can select the bubble */
+    @keyframes pulseRing { 0% { box-shadow: 0 0 0 0 var(--ring);} 100% { box-shadow: 0 0 0 16px rgba(79,140,255,0);} }
+    .pulse { animation: pulseRing 1.2s ease-out 2; }
+  </style>
 </head>
-<body class="bg-gray-50 text-gray-800">
+<body>
+  <header>
+    <div class="container nav">
+      <div class="brand"><span class="brand-badge" aria-hidden="true"></span> TCOS Assistance Agent</div>
+      <nav>
+        <a href="#about" class="btn" title="About TCOS 2021">About TCOS 2021</a>
+      </nav>
+    </div>
+  </header>
 
-    <!-- Header -->
-    <header class="bg-white shadow-md">
-        <div class="container mx-auto px-6 py-4">
-            <h1 class="text-3xl font-bold text-gray-900">TCOS Assistance Chatbot</h1>
-            <p class="mt-1 text-md text-gray-600">Your guide to the Terms & Conditions of Supply in Rajasthan</p>
+  <main class="container">
+    <section class="hero">
+      <div class="grid">
+        <div class="card">
+          <h1>Ask anything about <span style="color:var(--brand)">TCOS&nbsp;2021</span></h1>
+          <p class="lead">The TCOS Assistance Chatbot answers clause-wise questions and helps you navigate supply rules for electricity connections in Rajasthan.</p>
+          <div class="panel" role="note" aria-label="Brief introduction of TCOS 2021">
+            <p style="margin:0"> <strong>Brief introduction — TCOS 2021:</strong> Terms &amp; Conditions of Supply (TCOS) 2021 set binding rules between distribution licensees and electricity consumers. They govern how service is sanctioned, connected and metered; categories and tariffs; contract demand and load changes; security deposits and power factor obligations; billing, payment, and disconnection/reconnection; meter testing, accuracy and replacement; supply quality, outages, and safety; theft/unauthorized use procedures; and grievance redressal. In Rajasthan DISCOMs, TCOS‑2021 superseded 2004 provisions and aligns with the RERC Electricity Supply Code, 2021 and the Electricity Act, 2003. Utilities must provide service standards; consumers must comply with technical, commercial and safety requirements for the life of the connection.</p>
+          </div>
+
+          <div class="bullets" aria-label="Highlights">
+            <div class="tick"><i></i> Clause & page aware answers</div>
+            <div class="tick"><i></i> Metering, billing & connection guidance</div>
+            <div class="tick"><i></i> Links to relevant regulations</div>
+            <div class="tick"><i></i> Works on desktop & mobile</div>
+          </div>
+
+          <div style="margin-top:16px; display:flex; gap:10px; flex-wrap:wrap">
+            <button id="open-chat" class="btn" type="button" aria-label="Open chatbot">Open Chatbot</button>
+            <a class="btn" href="#faq" aria-label="Jump to FAQ">How it works</a>
+          </div>
         </div>
-    </header>
 
-    <!-- Main Content -->
-    <main class="container mx-auto px-6 py-12">
-        <div class="grid grid-cols-1 lg:grid-cols-3 gap-12">
-            
-            <!-- Left Column: Introduction to TCOS -->
-            <div class="lg:col-span-1">
-                <div class="bg-white p-6 rounded-lg shadow-lg h-full">
-                    <h2 class="text-2xl font-semibold mb-4 text-gray-800 border-b pb-2">About TCOS 2021</h2>
-                    <div class="space-y-4 text-gray-700">
-                        <p>
-                            The Terms & Conditions of Supply (TCOS) 2021 establish a binding framework between electricity distribution licensees (DISCOMs) and consumers in Rajasthan.
-                        </p>
-                        <p>
-                            They oversee critical aspects of electricity service, including:
-                        </p>
-                        <ul class="list-disc list-inside space-y-2 pl-2">
-                            <li>Service connection, sanctioning, and metering.</li>
-                            <li>Tariff categories and contract demand.</li>
-                            <li>Billing, payments, and disconnection procedures.</li>
-                            <li>Meter accuracy, testing, and replacement.</li>
-                            <li>Supply quality, safety standards, and outage management.</li>
-                            <li>Procedures for theft or unauthorized use of electricity.</li>
-                            <li>Consumer grievance redressal mechanisms.</li>
-                        </ul>
-                        <p class="pt-2">
-                            Superseding the 2004 provisions, TCOS-2021 aligns with the RERC Electricity Supply Code, 2021, and the Electricity Act, 2003, ensuring standardized and fair practices.
-                        </p>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Right Column: Chatbot -->
-            <div class="lg:col-span-2">
-                 <div class="bg-white p-6 rounded-lg shadow-lg">
-                    <h2 class="text-2xl font-semibold mb-4 text-gray-800">Ask the Chatbot</h2>
-                    <p class="text-gray-600 mb-6">Have a question about TCOS? Type it below to get an instant answer.</p>
-                    <!-- Chatbot Embed Code -->
-                    <div id="customgpt_chat"></div>
-                    <script src="https://cdn.customgpt.ai/js/embed.js" defer div_id="customgpt_chat" p_id="78605" p_key="8d59005228380ad16da1f46c312fcb79"></script>
-                 </div>
-            </div>
-
+        <div class="card" aria-hidden="false" aria-label="Quick examples">
+          <h2 style="margin-top:4px">Try these questions</h2>
+          <ul style="margin: 10px 0 0 18px; color: #cbd6f0;">
+            <li>“What are the documents needed for a new domestic connection?”</li>
+            <li>“Explain rules for contract demand increase under TCOS‑2021.”</li>
+            <li>“When can supply be disconnected for non‑payment?”</li>
+            <li>“Power factor obligations for HT consumers?”</li>
+            <li>“Meter testing and replacement provisions?”</li>
+          </ul>
+          <p style="margin-top: 12px; color: var(--muted)">Click the chat bubble in the bottom‑right to start.</p>
         </div>
-    </main>
+      </div>
+    </section>
 
-    <!-- Footer -->
-    <footer class="bg-white mt-12">
-        <div class="container mx-auto px-6 py-4 text-center text-gray-500">
-            <p>&copy; 2024 TCOS Assistance Portal. All Rights Reserved.</p>
+    <section id="about">
+      <h2>About the Assistant</h2>
+      <div class="features">
+        <div class="card">
+          <strong>Authoritative</strong>
+          <p style="margin:8px 0 0; color: var(--muted)">Trained on TCOS‑2021 and related codes so you get relevant guidance with citations where available.</p>
         </div>
-    </footer>
+        <div class="card">
+          <strong>Fast</strong>
+          <p style="margin:8px 0 0; color: var(--muted)">Clause‑wise lookup in seconds—no manual PDF search.</p>
+        </div>
+        <div class="card">
+          <strong>Simple</strong>
+          <p style="margin:8px 0 0; color: var(--muted)">Ask in plain English or Hindi; the bot handles the rest.</p>
+        </div>
+      </div>
+    </section>
 
+    <section id="faq">
+      <h2>FAQ</h2>
+      <div class="card">
+        <p><strong>Where is the chatbot?</strong> A floating chat bubble appears in the bottom‑right of this page after it loads.</p>
+        <p><strong>Fullscreen?</strong> Click the bubble to open the conversation window. On mobile it uses the full screen automatically.</p>
+        <p><strong>Privacy note:</strong> Do not paste personal account numbers or confidential data.</p>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    <div class="container">© <span id="y"></span> TCOS Assistance Agent • For informational use alongside official DISCOM regulations.</div>
+  </footer>
+
+  <noscript>
+    <div class="container" style="margin: 20px auto;">
+      <div class="card">JavaScript is disabled. Please enable it to use the TCOS Assistance Chatbot.</div>
+    </div>
+  </noscript>
+
+  <!-- CustomGPT floating chat bubble embed -->
+  <script defer src="https://cdn.customgpt.ai/js/chat.js"></script>
+  <script defer>
+    (function(){
+      function init(){
+        try {
+          // Initialize the chat bubble
+          CustomGPT.init({ p_id: '78605', p_key: '8d59005228380ad16da1f46c312fcb79' });
+        } catch(e) { console.warn('CustomGPT init error', e); }
+
+        // Optional: "Open Chatbot" button tries to open/focus the bubble if an API exists
+        var btn = document.getElementById('open-chat');
+        if (btn) {
+          btn.addEventListener('click', function(){
+            try {
+              if (window.CustomGPT && typeof window.CustomGPT.open === 'function') {
+                window.CustomGPT.open();
+                return;
+              }
+              var bubble = document.querySelector('.customgpt-launcher, #customgpt-chat-bubble, [data-customgpt-launcher]');
+              if (bubble) { bubble.classList.add('pulse'); setTimeout(function(){ bubble.classList.remove('pulse'); }, 1600); bubble.click(); }
+              else { alert('Please click the chat bubble in the bottom-right to start.'); }
+            } catch(err) { alert('Please click the chat bubble in the bottom-right to start.'); }
+          });
+        }
+
+        // footer year
+        var y = document.getElementById('y'); if (y) y.textContent = new Date().getFullYear();
+      }
+      document.readyState === 'complete' ? init() : window.addEventListener('load', init);
+    })();
+  </script>
 </body>
 </html>
