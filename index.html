@@ -1,218 +1,91 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>TCOS Assistant Agent</title>
-  <meta name="description" content="Chat with TCOS Assistant Agent—your smart assistant embedded via CustomGPT." />
-
-  <!-- Open Graph / Social -->
-  <meta property="og:title" content="TCOS Assistant Agent" />
-  <meta property="og:description" content="Chat with TCOS Assistant Agent—your smart assistant embedded via CustomGPT." />
-  <meta property="og:type" content="website" />
-  <meta property="og:url" content="https://example.com/" />
-
-  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 256 256'%3E%3Ccircle cx='128' cy='128' r='120' fill='%2300A3FF'/%3E%3Ctext x='50%25' y='53%25' dominant-baseline='middle' text-anchor='middle' font-size='120' font-family='Arial' fill='white'%3ET%3C/text%3E%3C/svg%3E" />
-
-  <style>
-    :root {
-      --bg: #0b1220;
-      --card: #121a2b;
-      --text: #e8eefc;
-      --muted: #b9c3d6;
-      --accent: #4f8cff;
-      --accent-2: #23d18b;
-      --ring: rgba(79,140,255,0.5);
-    }
-    * { box-sizing: border-box; }
-    html, body { height: 100%; }
-    body {
-      margin: 0;
-      font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, "Apple Color Emoji", "Segoe UI Emoji";
-      background: radial-gradient(1200px 800px at 10% -10%, #1a2650 0%, transparent 50%),
-                  radial-gradient(900px 700px at 110% 10%, #1c3a56 0%, transparent 50%),
-                  var(--bg);
-      color: var(--text);
-      line-height: 1.6;
-    }
-    a { color: var(--accent); text-decoration: none; }
-    a:hover { text-decoration: underline; }
-
-    .container { max-width: 1100px; margin: 0 auto; padding: 24px; }
-
-    /* Header */
-    header {
-      position: sticky; top: 0; z-index: 50;
-      backdrop-filter: saturate(160%) blur(8px);
-      background: rgba(11,18,32,0.6);
-      border-bottom: 1px solid rgba(255,255,255,0.06);
-    }
-    .nav { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
-    .brand { display: flex; align-items: center; gap: 10px; font-weight: 700; letter-spacing: .3px; }
-    .brand-logo {
-      width: 36px; height: 36px; border-radius: 12px; display: grid; place-items: center; font-weight: 800;
-      background: linear-gradient(135deg, var(--accent), #7aa8ff);
-      color: #071221;
-      box-shadow: 0 8px 24px rgba(79,140,255,.35);
-    }
-    .nav a { color: var(--muted); font-weight: 600; margin-left: 18px; }
-    .nav a:hover { color: var(--text); }
-
-    /* Hero */
-    .hero {
-      display: grid; grid-template-columns: 1.1fr .9fr; gap: 36px; align-items: center; padding: 48px 0 12px;
-    }
-    @media (max-width: 900px) { .hero { grid-template-columns: 1fr; } }
-
-    h1 { font-size: clamp(28px, 4vw, 48px); line-height: 1.12; margin: 0 0 12px; }
-    .lead { font-size: clamp(16px, 2.2vw, 20px); color: var(--muted); margin: 0 0 24px; }
-
-    .cta-row { display: flex; gap: 12px; flex-wrap: wrap; }
-    .btn {
-      padding: 12px 18px; border-radius: 14px; border: 1px solid rgba(255,255,255,0.12);
-      background: linear-gradient(180deg, rgba(255,255,255,.06), rgba(255,255,255,.02));
-      color: var(--text); font-weight: 700; cursor: pointer;
-      transition: transform .08s ease, box-shadow .2s ease, border-color .2s ease;
-      box-shadow: 0 8px 20px rgba(0,0,0,.25);
-    }
-    .btn:hover { transform: translateY(-1px); border-color: var(--ring); }
-    .btn.primary { background: linear-gradient(135deg, var(--accent), #7aa8ff); color: #071221; border: 0; }
-
-    /* Card */
-    .card { background: linear-gradient(180deg, rgba(255,255,255,.04), rgba(255,255,255,.02)); border: 1px solid rgba(255,255,255,0.08); border-radius: 18px; box-shadow: 0 10px 30px rgba(0,0,0,.25); }
-    .card-pad { padding: 18px; }
-
-    /* Chat Section */
-    .chat-wrap { margin: 18px 0 42px; display: grid; grid-template-columns: 1fr; gap: 18px; }
-    .chat-header { display: flex; align-items: center; justify-content: space-between; }
-
-    .status { font-size: 13px; color: var(--muted); }
-
-    #customgpt_chat { min-height: 560px; border-radius: 16px; overflow: hidden; background: var(--card); border: 1px dashed rgba(255,255,255,0.12); display: grid; place-items: center; }
-    .skeleton { display: grid; gap: 12px; width: min(680px, 92%); }
-    .skeleton .bar { height: 12px; border-radius: 999px; background: linear-gradient(90deg, rgba(255,255,255,.08), rgba(255,255,255,.16), rgba(255,255,255,.08)); background-size: 200% 100%; animation: loading 1.2s infinite; }
-    .skeleton .bar.lg { height: 18px; }
-    @keyframes loading { 0% { background-position: 200% 0; } 100% { background-position: -200% 0; } }
-
-    /* Features */
-    .features { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
-    @media (max-width: 900px) { .features { grid-template-columns: 1fr; } }
-    .feature { padding: 18px; border-radius: 16px; background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.08); }
-    .feature h3 { margin: 6px 0 8px; }
-    .feature p { margin: 0; color: var(--muted); }
-
-    footer { margin-top: 52px; padding: 24px 0 36px; color: var(--muted); border-top: 1px solid rgba(255,255,255,0.08); }
-  </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TCOS Assistance Chatbot</title>
+    <!-- Tailwind CSS for styling -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Google Fonts: Inter -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        /* Custom styles */
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f7fafc; /* Light gray background */
+        }
+        /* Style for the chatbot container to ensure it has a minimum height */
+        #customgpt_chat {
+            min-height: 500px; /* Adjust as needed */
+            border-radius: 0.5rem;
+            overflow: hidden;
+            box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+        }
+    </style>
 </head>
-<body>
-  <header>
-    <div class="container nav">
-      <div class="brand">
-        <div class="brand-logo" aria-hidden="true">T</div>
-        <div>
-          <div style="font-size: 15px; color: var(--muted); font-weight: 700; text-transform: uppercase; letter-spacing: 1px;">Chatbot</div>
-          <div style="font-size: 20px">TCOS Assistant Agent</div>
+<body class="bg-gray-50 text-gray-800">
+
+    <!-- Header -->
+    <header class="bg-white shadow-md">
+        <div class="container mx-auto px-6 py-4">
+            <h1 class="text-3xl font-bold text-gray-900">TCOS Assistance Chatbot</h1>
+            <p class="mt-1 text-md text-gray-600">Your guide to the Terms & Conditions of Supply in Rajasthan</p>
         </div>
-      </div>
-      <nav>
-        <a href="#chat">Chat</a>
-        <a href="#features">Features</a>
-        <a href="#about">About</a>
-      </nav>
-    </div>
-  </header>
+    </header>
 
-  <main class="container">
-    <section class="hero">
-      <div>
-        <h1>Say hello to <span style="color: var(--accent-2)">TCOS Assistant Agent</span></h1>
-        <p class="lead">Your embedded AI assistant for fast answers, helpful guidance, and delightful conversations. No install—just type and go.</p>
-        <div class="cta-row">
-          <a class="btn primary" href="#chat">Open Chat</a>
-          <a class="btn" href="#features">Explore Features</a>
+    <!-- Main Content -->
+    <main class="container mx-auto px-6 py-12">
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-12">
+            
+            <!-- Left Column: Introduction to TCOS -->
+            <div class="lg:col-span-1">
+                <div class="bg-white p-6 rounded-lg shadow-lg h-full">
+                    <h2 class="text-2xl font-semibold mb-4 text-gray-800 border-b pb-2">About TCOS 2021</h2>
+                    <div class="space-y-4 text-gray-700">
+                        <p>
+                            The Terms & Conditions of Supply (TCOS) 2021 establish a binding framework between electricity distribution licensees (DISCOMs) and consumers in Rajasthan.
+                        </p>
+                        <p>
+                            They oversee critical aspects of electricity service, including:
+                        </p>
+                        <ul class="list-disc list-inside space-y-2 pl-2">
+                            <li>Service connection, sanctioning, and metering.</li>
+                            <li>Tariff categories and contract demand.</li>
+                            <li>Billing, payments, and disconnection procedures.</li>
+                            <li>Meter accuracy, testing, and replacement.</li>
+                            <li>Supply quality, safety standards, and outage management.</li>
+                            <li>Procedures for theft or unauthorized use of electricity.</li>
+                            <li>Consumer grievance redressal mechanisms.</li>
+                        </ul>
+                        <p class="pt-2">
+                            Superseding the 2004 provisions, TCOS-2021 aligns with the RERC Electricity Supply Code, 2021, and the Electricity Act, 2003, ensuring standardized and fair practices.
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Right Column: Chatbot -->
+            <div class="lg:col-span-2">
+                 <div class="bg-white p-6 rounded-lg shadow-lg">
+                    <h2 class="text-2xl font-semibold mb-4 text-gray-800">Ask the Chatbot</h2>
+                    <p class="text-gray-600 mb-6">Have a question about TCOS? Type it below to get an instant answer.</p>
+                    <!-- Chatbot Embed Code -->
+                    <div id="customgpt_chat"></div>
+                    <script src="https://cdn.customgpt.ai/js/embed.js" defer div_id="customgpt_chat" p_id="78605" p_key="8d59005228380ad16da1f46c312fcb79"></script>
+                 </div>
+            </div>
+
         </div>
-      </div>
-      <div class="card card-pad">
-        <strong>How it works</strong>
-        <ol>
-          <li>Scroll to the chat section below.</li>
-          <li>Ask any question—TCOS will respond instantly.</li>
-          <li>Use the site links to learn more or contact us.</li>
-        </ol>
-        <p class="status">If the chat doesn’t load, check your network or allow third‑party scripts from <code>cdn.customgpt.ai</code>.</p>
-      </div>
-    </section>
+    </main>
 
-    <section id="chat" aria-label="Chat with TCOS Assistant Agent" class="chat-wrap">
-      <div class="chat-header">
-        <h2 style="margin: 0;">Start Chatting</h2>
-        <span class="status">Live • Embedded via CustomGPT</span>
-      </div>
-
-      <!-- Chat container with a graceful loading skeleton -->
-      <div id="customgpt_chat" role="region" aria-live="polite" aria-busy="true">
-        <div class="skeleton" aria-hidden="true">
-          <div class="bar lg"></div>
-          <div class="bar"></div>
-          <div class="bar"></div>
-          <div class="bar"></div>
-          <div class="bar lg" style="width: 70%"></div>
+    <!-- Footer -->
+    <footer class="bg-white mt-12">
+        <div class="container mx-auto px-6 py-4 text-center text-gray-500">
+            <p>&copy; 2024 TCOS Assistance Portal. All Rights Reserved.</p>
         </div>
-      </div>
-
-      <!-- Required embed: do not modify attributes below -->
-      <script src="https://cdn.customgpt.ai/js/embed.js" defer div_id="customgpt_chat" p_id="78605" p_key="8d59005228380ad16da1f46c312fcb79"></script>
-      <noscript>
-        <div class="card card-pad" style="border-color: #ffb4b4;">
-          <strong>JavaScript is disabled.</strong>
-          <p>To use the TCOS Assistant Agent, please enable JavaScript. The chat is embedded using CustomGPT and loads via an external script.</p>
-        </div>
-      </noscript>
-    </section>
-
-    <section id="features" class="features" aria-label="Key features">
-      <div class="feature">
-        <h3>Instant Answers</h3>
-        <p>Ask questions and get responses in seconds—right within the page.</p>
-      </div>
-      <div class="feature">
-        <h3>Secure Embed</h3>
-        <p>Chat is served from a trusted CDN via your project credentials. Keep your keys safe.</p>
-      </div>
-      <div class="feature">
-        <h3>Responsive Design</h3>
-        <p>Works great on desktop, tablet, and mobile—no configuration needed.</p>
-      </div>
-    </section>
-
-    <section id="about" class="card card-pad" aria-label="About TCOS Assistant Agent">
-      <h2 style="margin-top: 0;">About</h2>
-      <p>TCOS Assistant Agent read TCOS 2021 and other updation made time to time  and give answer relevent to it</p>
-      <ul>
-        <li><strong>UserGuide:</strong> Ask Questions releated to Terms and conditions of supply.</li>
-        <li><strong>Support:</strong> For further assistant contact to your JVVNL Subdivision.</li>
-        
-      </ul>
-    </section>
-
-    <footer>
-      <div class="container" style="padding: 0;">
-        © <span id="year"></span> TCOS Assistant Agent. All rights reserved.
-      </div>
     </footer>
-  </main>
 
-  <script>
-    // Update footer year
-    document.getElementById('year').textContent = new Date().getFullYear();
-
-    // Remove loading state once widget attaches to the container
-    window.addEventListener('load', () => {
-      const chat = document.getElementById('customgpt_chat');
-      const clearBusy = () => chat && chat.setAttribute('aria-busy', 'false');
-      // Give the embed script a brief moment to mount its UI
-      setTimeout(clearBusy, 1200);
-    });
-  </script>
 </body>
 </html>
