@@ -1,205 +1,437 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>TCOS Assistance Chatbot</title>
-  <meta name="description" content="Ask questions about Terms & Conditions of Supply (TCOS) 2021 with the TCOS Assistance Chatbot." />
-  <style>
-    :root {
-      --bg: #0b1220;
-      --fg: #eaf0ff;
-      --muted: #a9b4cc;
-      --brand: #4f8cff;
-      --card: #121a2b;
-      --card-2: #0e1626;
-      --ring: rgba(79,140,255,.4);
-    }
-    * { box-sizing: border-box; }
-    html, body { height: 100%; }
-    body {
-      margin: 0;
-      font: 16px/1.55 system-ui, -apple-system, Segoe UI, Roboto, "Helvetica Neue", Arial, "Noto Sans", "Apple Color Emoji", "Segoe UI Emoji";
-      color: var(--fg);
-      background:
-        radial-gradient(1200px 600px at 10% -10%, #1a2744 0, transparent 60%),
-        radial-gradient(1200px 600px at 110% 10%, #16233e 0, transparent 60%),
-        var(--bg);
-    }
-    a { color: var(--fg); text-decoration: none; }
-    .container { width: min(1100px, 92vw); margin: 0 auto; }
-    header {
-      position: sticky; top: 0; z-index: 10;
-      backdrop-filter: blur(8px);
-      background: linear-gradient(180deg, rgba(11,18,32,.85), rgba(11,18,32,.55));
-      border-bottom: 1px solid rgba(255,255,255,.05);
-    }
-    .nav { display: flex; align-items: center; justify-content: space-between; padding: 14px 0; }
-    .brand { display: flex; align-items: center; gap: 10px; font-weight: 700; letter-spacing: .2px; }
-    .brand-badge {
-      width: 34px; height: 34px; border-radius: 10px;
-      background: linear-gradient(135deg, var(--brand), #8eaaff);
-      box-shadow: 0 10px 30px rgba(79,140,255,.35);
-    }
-    .btn {
-      display: inline-flex; align-items: center; gap: 8px;
-      padding: 10px 14px; border-radius: 14px; border: 1px solid rgba(255,255,255,.12);
-      background: linear-gradient(180deg, #1a2540, #131d34);
-      color: var(--fg); cursor: pointer; transition: .2s ease; font-weight: 600;
-    }
-    .btn:hover { transform: translateY(-1px); box-shadow: 0 10px 30px rgba(79,140,255,.18); border-color: rgba(79,140,255,.35); }
-
-    .hero { padding: clamp(36px, 7vw, 84px) 0 32px; }
-    .grid { display: grid; grid-template-columns: 1.1fr .9fr; gap: 28px; align-items: center; }
-    @media (max-width: 900px){ .grid { grid-template-columns: 1fr; } }
-
-    .card {
-      background: linear-gradient(180deg, var(--card), var(--card-2));
-      border: 1px solid rgba(255,255,255,.06);
-      border-radius: 18px; padding: clamp(18px, 3vw, 26px);
-      box-shadow: 0 12px 40px rgba(0,0,0,.25);
-    }
-    h1 { font-size: clamp(28px, 4.5vw, 46px); margin: 0 0 10px; line-height: 1.18; }
-    p.lead { color: var(--muted); font-size: clamp(16px, 2.2vw, 18px); margin: 8px 0 16px; }
-    .bullets { display: grid; grid-template-columns: repeat(2, minmax(0,1fr)); gap: 12px 14px; margin-top: 14px; }
-    @media (max-width: 640px){ .bullets { grid-template-columns: 1fr; } }
-    .tick { display: inline-flex; align-items: center; gap: 10px; color: #cdd7ef; }
-    .tick i { width: 22px; height: 22px; border-radius: 8px; background: rgba(79,140,255,.2); border: 1px solid rgba(79,140,255,.35); box-shadow: inset 0 0 0 3px rgba(79,140,255,.12); }
-
-    .panel { padding: 18px; border-radius: 16px; border: 1px dashed rgba(255,255,255,.12); background: rgba(255,255,255,.03); }
-    code.inline { padding: 2px 6px; border-radius: 8px; border: 1px solid rgba(255,255,255,.1); background: rgba(0,0,0,.35); font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace; font-size: .95em; }
-
-    section { padding: 22px 0 54px; }
-    h2 { font-size: clamp(22px, 3.2vw, 28px); margin: 0 0 12px; }
-    .features { display: grid; grid-template-columns: repeat(3, minmax(0,1fr)); gap: 16px; }
-    @media (max-width: 900px){ .features { grid-template-columns: 1fr 1fr; } }
-    @media (max-width: 640px){ .features { grid-template-columns: 1fr; } }
-
-    .kbd { font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono"; background: rgba(255,255,255,.06); padding: 2px 6px; border-radius: 6px; border: 1px solid rgba(255,255,255,.1); }
-
-    footer { padding: 30px 0 60px; color: var(--muted); text-align: center; }
-
-    /* little pulse helper if we can select the bubble */
-    @keyframes pulseRing { 0% { box-shadow: 0 0 0 0 var(--ring);} 100% { box-shadow: 0 0 0 16px rgba(79,140,255,0);} }
-    .pulse { animation: pulseRing 1.2s ease-out 2; }
-  </style>
-</head>
-<body>
-  <header>
-    <div class="container nav">
-      <div class="brand"><span class="brand-badge" aria-hidden="true"></span> TCOS Assistance Agent</div>
-      <nav>
-        <a href="#about" class="btn" title="About TCOS 2021">About TCOS 2021</a>
-      </nav>
-    </div>
-  </header>
-
-  <main class="container">
-    <section class="hero">
-      <div class="grid">
-        <div class="card">
-          <h1>Ask anything about <span style="color:var(--brand)">TCOS&nbsp;2021</span></h1>
-          <p class="lead">The TCOS Assistance Chatbot answers clause-wise questions and helps you navigate supply rules for electricity connections in Rajasthan.</p>
-          <div class="panel" role="note" aria-label="Brief introduction of TCOS 2021">
-            <p style="margin:0"> <strong>Brief introduction — TCOS 2021:</strong> Terms &amp; Conditions of Supply (TCOS) 2021 set binding rules between distribution licensees and electricity consumers. They govern how service is sanctioned, connected and metered; categories and tariffs; contract demand and load changes; security deposits and power factor obligations; billing, payment, and disconnection/reconnection; meter testing, accuracy and replacement; supply quality, outages, and safety; theft/unauthorized use procedures; and grievance redressal. In Rajasthan DISCOMs, TCOS‑2021 superseded 2004 provisions and aligns with the RERC Electricity Supply Code, 2021 and the Electricity Act, 2003. Utilities must provide service standards; consumers must comply with technical, commercial and safety requirements for the life of the connection.</p>
-          </div>
-
-          <div class="bullets" aria-label="Highlights">
-            <div class="tick"><i></i> Clause & page aware answers</div>
-            <div class="tick"><i></i> Metering, billing & connection guidance</div>
-            <div class="tick"><i></i> Links to relevant regulations</div>
-            <div class="tick"><i></i> Works on desktop & mobile</div>
-          </div>
-
-          <div style="margin-top:16px; display:flex; gap:10px; flex-wrap:wrap">
-            <button id="open-chat" class="btn" type="button" aria-label="Open chatbot">Open Chatbot</button>
-            <a class="btn" href="#faq" aria-label="Jump to FAQ">How it works</a>
-          </div>
-        </div>
-
-        <div class="card" aria-hidden="false" aria-label="Quick examples">
-          <h2 style="margin-top:4px">Try these questions</h2>
-          <ul style="margin: 10px 0 0 18px; color: #cbd6f0;">
-            <li>“What are the documents needed for a new domestic connection?”</li>
-            <li>“Explain rules for contract demand increase under TCOS‑2021.”</li>
-            <li>“When can supply be disconnected for non‑payment?”</li>
-            <li>“Power factor obligations for HT consumers?”</li>
-            <li>“Meter testing and replacement provisions?”</li>
-          </ul>
-          <p style="margin-top: 12px; color: var(--muted)">Click the chat bubble in the bottom‑right to start.</p>
-        </div>
-      </div>
-    </section>
-
-    <section id="about">
-      <h2>About the Assistant</h2>
-      <div class="features">
-        <div class="card">
-          <strong>Authoritative</strong>
-          <p style="margin:8px 0 0; color: var(--muted)">Trained on TCOS‑2021 and related codes so you get relevant guidance with citations where available.</p>
-        </div>
-        <div class="card">
-          <strong>Fast</strong>
-          <p style="margin:8px 0 0; color: var(--muted)">Clause‑wise lookup in seconds—no manual PDF search.</p>
-        </div>
-        <div class="card">
-          <strong>Simple</strong>
-          <p style="margin:8px 0 0; color: var(--muted)">Ask in plain English or Hindi; the bot handles the rest.</p>
-        </div>
-      </div>
-    </section>
-
-    <section id="faq">
-      <h2>FAQ</h2>
-      <div class="card">
-        <p><strong>Where is the chatbot?</strong> A floating chat bubble appears in the bottom‑right of this page after it loads.</p>
-        <p><strong>Fullscreen?</strong> Click the bubble to open the conversation window. On mobile it uses the full screen automatically.</p>
-        <p><strong>Privacy note:</strong> Do not paste personal account numbers or confidential data.</p>
-      </div>
-    </section>
-  </main>
-
-  <footer>
-    <div class="container">© <span id="y"></span> TCOS Assistance Agent • For informational use alongside official DISCOM regulations.</div>
-  </footer>
-
-  <noscript>
-    <div class="container" style="margin: 20px auto;">
-      <div class="card">JavaScript is disabled. Please enable it to use the TCOS Assistance Chatbot.</div>
-    </div>
-  </noscript>
-
-  <!-- CustomGPT floating chat bubble embed -->
-  <script defer src="https://cdn.customgpt.ai/js/chat.js"></script>
-  <script defer>
-    (function(){
-      function init(){
-        try {
-          // Initialize the chat bubble
-          CustomGPT.init({ p_id: '78605', p_key: '8d59005228380ad16da1f46c312fcb79' });
-        } catch(e) { console.warn('CustomGPT init error', e); }
-
-        // Optional: "Open Chatbot" button tries to open/focus the bubble if an API exists
-        var btn = document.getElementById('open-chat');
-        if (btn) {
-          btn.addEventListener('click', function(){
-            try {
-              if (window.CustomGPT && typeof window.CustomGPT.open === 'function') {
-                window.CustomGPT.open();
-                return;
-              }
-              var bubble = document.querySelector('.customgpt-launcher, #customgpt-chat-bubble, [data-customgpt-launcher]');
-              if (bubble) { bubble.classList.add('pulse'); setTimeout(function(){ bubble.classList.remove('pulse'); }, 1600); bubble.click(); }
-              else { alert('Please click the chat bubble in the bottom-right to start.'); }
-            } catch(err) { alert('Please click the chat bubble in the bottom-right to start.'); }
-          });
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TCOS-2021 Assistant Chatbot - JVVNL</title>
+    <link rel="icon" type="image/x-icon" href="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMzIiIGhlaWdodD0iMzIiIHZpZXdCb3g9IjAgMCAzMiAzMiIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHJlY3Qgd2lkdGg9IjMyIiBoZWlnaHQ9IjMyIiByeD0iNCIgZmlsbD0iIzAwNzNBNyIvPgo8dGV4dCB4PSI1IiB5PSIyMCIgZm9udC1mYW1pbHk9IkFyaWFsLCBzYW5zLXNlcmlmIiBmb250LXNpemU9IjEwIiBmb250LXdlaWdodD0iYm9sZCIgZmlsbD0id2hpdGUiPkpWVk5MPC90ZXh0Pgo8L3N2Zz4K">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
         }
 
-        // footer year
-        var y = document.getElementById('y'); if (y) y.textContent = new Date().getFullYear();
-      }
-      document.readyState === 'complete' ? init() : window.addEventListener('load', init);
-    })();
-  </script>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #e3f2fd 0%, #bbdefb 100%);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #0066cc 0%, #004c99 100%);
+            color: white;
+            padding: 1rem 0;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+
+        .header-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 2rem;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .logo-section {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .jvvnl-logo {
+            width: 60px;
+            height: 60px;
+            background: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            color: #0066cc;
+            font-size: 12px;
+            text-align: center;
+            line-height: 1.2;
+        }
+
+        .header h1 {
+            font-size: 2rem;
+            font-weight: 600;
+        }
+
+        .header p {
+            font-size: 0.9rem;
+            opacity: 0.9;
+            margin-top: 0.25rem;
+        }
+
+        .main-content {
+            flex: 1;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 3rem 2rem;
+            width: 100%;
+        }
+
+        .intro-section {
+            background: white;
+            border-radius: 15px;
+            padding: 2.5rem;
+            box-shadow: 0 8px 25px rgba(0,0,0,0.1);
+            margin-bottom: 3rem;
+        }
+
+        .intro-section h2 {
+            color: #0066cc;
+            font-size: 1.8rem;
+            margin-bottom: 1.5rem;
+            text-align: center;
+        }
+
+        .about-tcos {
+            line-height: 1.7;
+            color: #333;
+            margin-bottom: 2rem;
+        }
+
+        .about-tcos p {
+            margin-bottom: 1rem;
+        }
+
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 1.5rem;
+            margin-top: 2rem;
+        }
+
+        .feature-card {
+            background: #f8f9ff;
+            padding: 1.5rem;
+            border-radius: 10px;
+            border-left: 4px solid #0066cc;
+        }
+
+        .feature-card h4 {
+            color: #0066cc;
+            margin-bottom: 0.5rem;
+            font-size: 1.1rem;
+        }
+
+        .feature-card p {
+            color: #666;
+            font-size: 0.9rem;
+        }
+
+        .chatbot-section {
+            background: white;
+            border-radius: 15px;
+            padding: 2.5rem;
+            box-shadow: 0 8px 25px rgba(0,0,0,0.1);
+            text-align: center;
+        }
+
+        .chatbot-header {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .chatbot-logo {
+            width: 80px;
+            height: 80px;
+            background: linear-gradient(135deg, #87ceeb 0%, #4da6d9 100%);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 2rem;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+        }
+
+        .chatbot-section h2 {
+            color: #0066cc;
+            font-size: 1.8rem;
+            margin-bottom: 1rem;
+        }
+
+        .chatbot-description {
+            color: #666;
+            line-height: 1.6;
+            margin-bottom: 2rem;
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .chat-interface {
+            background: #87ceeb;
+            border-radius: 20px;
+            padding: 2rem;
+            margin: 2rem 0;
+            box-shadow: inset 0 2px 10px rgba(0,0,0,0.1);
+            position: relative;
+        }
+
+        .jvvnl-center-logo {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 120px;
+            height: 120px;
+            background: rgba(255,255,255,0.2);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            color: white;
+            font-size: 18px;
+            text-align: center;
+            line-height: 1.2;
+            backdrop-filter: blur(10px);
+            border: 2px solid rgba(255,255,255,0.3);
+        }
+
+        .chat-bubble {
+            background: white;
+            border-radius: 18px;
+            padding: 1rem 1.5rem;
+            margin: 1rem auto;
+            max-width: 300px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            position: relative;
+        }
+
+        .chat-bubble:before {
+            content: '';
+            position: absolute;
+            bottom: -8px;
+            left: 20px;
+            width: 0;
+            height: 0;
+            border-left: 8px solid transparent;
+            border-right: 8px solid transparent;
+            border-top: 8px solid white;
+        }
+
+        .chat-button {
+            background: linear-gradient(135deg, #0066cc 0%, #004c99 100%);
+            color: white;
+            border: none;
+            padding: 1rem 3rem;
+            border-radius: 50px;
+            font-size: 1.2rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(0,102,204,0.3);
+            text-decoration: none;
+            display: inline-block;
+        }
+
+        .chat-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(0,102,204,0.4);
+        }
+
+        .footer {
+            background: #004c99;
+            color: white;
+            text-align: center;
+            padding: 2rem;
+        }
+
+        .footer p {
+            opacity: 0.9;
+        }
+
+        @media (max-width: 768px) {
+            .header-content {
+                flex-direction: column;
+                text-align: center;
+            }
+
+            .main-content {
+                padding: 2rem 1rem;
+            }
+
+            .intro-section,
+            .chatbot-section {
+                padding: 1.5rem;
+            }
+
+            .features-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .jvvnl-center-logo {
+                width: 80px;
+                height: 80px;
+                font-size: 14px;
+            }
+        }
+
+        .pulse {
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0% {
+                transform: scale(1);
+            }
+            50% {
+                transform: scale(1.05);
+            }
+            100% {
+                transform: scale(1);
+            }
+        }
+    </style>
+</head>
+<body>
+    <header class="header">
+        <div class="header-content">
+            <div class="logo-section">
+                <div class="jvvnl-logo">JVVNL</div>
+                <div>
+                    <h1>TCOS-2021 Assistant</h1>
+                    <p>Jaipur Vidyut Vitran Nigam Limited</p>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <main class="main-content">
+        <section class="intro-section">
+            <h2>About TCOS-2021 Document</h2>
+            <div class="about-tcos">
+                <p><strong>Terms and Conditions for Supply of Electricity - 2021 (TCOS-2021)</strong> is a comprehensive regulatory document issued by Jaipur Vidyut Vitran Nigam Limited (JVVNL) that governs the supply of electricity to consumers in the JVVNL service area.</p>
+                
+                <p>This document establishes the legal framework and operational guidelines for electricity distribution, covering all aspects of consumer-utility relationships including application procedures, connection policies, billing standards, service quality parameters, and dispute resolution mechanisms.</p>
+                
+                <p>TCOS-2021 supersedes previous versions and aligns with the latest regulations from the Rajasthan Electricity Regulatory Commission (RERC), ensuring transparent, efficient, and consumer-friendly electricity services across Rajasthan's power distribution network.</p>
+            </div>
+            
+            <div class="features-grid">
+                <div class="feature-card">
+                    <h4>🔌 Connection Procedures</h4>
+                    <p>Detailed guidelines for new electricity connections, load enhancement, and supply modifications</p>
+                </div>
+                <div class="feature-card">
+                    <h4>📋 Consumer Categories</h4>
+                    <p>Classification of different consumer types including domestic, commercial, industrial, and agricultural</p>
+                </div>
+                <div class="feature-card">
+                    <h4>💰 Billing & Tariffs</h4>
+                    <p>Comprehensive billing procedures, tariff structures, and payment terms</p>
+                </div>
+                <div class="feature-card">
+                    <h4>⚡ Service Standards</h4>
+                    <p>Quality benchmarks, supply reliability parameters, and performance indicators</p>
+                </div>
+                <div class="feature-card">
+                    <h4>🛠️ Technical Requirements</h4>
+                    <p>Electrical safety standards, metering requirements, and installation specifications</p>
+                </div>
+                <div class="feature-card">
+                    <h4>⚖️ Grievance Redressal</h4>
+                    <p>Consumer complaint mechanisms, dispute resolution procedures, and ombudsman services</p>
+                </div>
+            </div>
+        </section>
+
+        <section class="chatbot-section">
+            <div class="chatbot-header">
+                <div class="chatbot-logo pulse">💬</div>
+                <h2>TCOS-2021 AI Assistant</h2>
+            </div>
+            
+            <div class="chatbot-description">
+                <p>Get instant answers to your queries about TCOS-2021 regulations, procedures, and policies. Our AI-powered assistant is trained on the complete TCOS-2021 document and can help you understand complex electricity supply terms, connection procedures, billing queries, and consumer rights.</p>
+                
+                <p><strong>Available 24/7 • Instant Responses • Comprehensive Knowledge Base</strong></p>
+            </div>
+
+            <div class="chat-interface">
+                <div class="jvvnl-center-logo">
+                    JVVNL<br>
+                    <small style="font-size: 12px; opacity: 0.8;">Powered by AI</small>
+                </div>
+                
+                <div class="chat-bubble">
+                    <strong>👋 Hello!</strong><br>
+                    Ask me anything about TCOS-2021 regulations, connection procedures, billing, or consumer policies.
+                </div>
+            </div>
+
+            <a href="https://krishan1180.app.n8n.cloud/webhook/5fcc8916-08bb-4b05-a72c-2f850f60f143/chat" 
+               target="_blank" 
+               class="chat-button">
+                Start Chatting Now
+            </a>
+            
+            <div style="margin-top: 1.5rem;">
+                <p style="color: #666; font-size: 0.9rem;">
+                    <strong>Example queries:</strong> "What documents are required for new connection?" • 
+                    "How to calculate electricity bill?" • "What are the consumer rights under TCOS-2021?"
+                </p>
+            </div>
+        </section>
+    </main>
+
+    <footer class="footer">
+        <p>&copy; 2025 Jaipur Vidyut Vitran Nigam Limited. All rights reserved.</p>
+        <p>TCOS-2021 Assistant Chatbot | Powered by Advanced AI Technology</p>
+    </footer>
+
+    <script>
+        // Add some interactive elements
+        document.addEventListener('DOMContentLoaded', function() {
+            // Smooth scrolling for internal links
+            const links = document.querySelectorAll('a[href^="#"]');
+            links.forEach(link => {
+                link.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    const target = document.querySelector(this.getAttribute('href'));
+                    if (target) {
+                        target.scrollIntoView({
+                            behavior: 'smooth',
+                            block: 'start'
+                        });
+                    }
+                });
+            });
+
+            // Add hover effect to feature cards
+            const featureCards = document.querySelectorAll('.feature-card');
+            featureCards.forEach(card => {
+                card.addEventListener('mouseenter', function() {
+                    this.style.transform = 'translateY(-5px)';
+                    this.style.transition = 'transform 0.3s ease';
+                    this.style.boxShadow = '0 8px 25px rgba(0,0,0,0.15)';
+                });
+                
+                card.addEventListener('mouseleave', function() {
+                    this.style.transform = 'translateY(0)';
+                    this.style.boxShadow = 'none';
+                });
+            });
+
+            // Add click tracking for the chat button
+            const chatButton = document.querySelector('.chat-button');
+            chatButton.addEventListener('click', function() {
+                // You can add analytics tracking here
+                console.log('Chat button clicked');
+            });
+        });
+    </script>
 </body>
 </html>
