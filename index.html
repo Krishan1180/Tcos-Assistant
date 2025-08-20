@@ -1,140 +1,105 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>TCOS-2021 Assistant Chatbot</title>
-    <style>
-        body {
-            margin: 0;
-            font-family: Arial, sans-serif;
-            background: #e6f0ff; /* Light blue background */
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            min-height: 100vh;
-            color: #003366;
-        }
-
-        header {
-            margin-top: 2rem;
-            max-width: 800px;
-            text-align: center;
-            padding: 0 1rem;
-        }
-
-        header h1 {
-            margin-bottom: 0.25rem;
-        }
-
-        header p {
-            font-size: 1.1rem;
-            line-height: 1.5;
-        }
-
-        /* Centered JVVNL logo behind chat section */
-        .logo-center {
-            position: relative;
-            margin: 2rem 0;
-            width: 200px;
-            height: 200px;
-            opacity: 0.1;
-            background: url('https://upload.wikimedia.org/wikipedia/en/thumb/1/17/JVVNL_logo.svg/512px-JVVNL_logo.svg.png') no-repeat center center;
-            background-size: contain;
-        }
-
-        /* Chat bubble container fixed at bottom right */
-        .chat-bubble {
-            position: fixed;
-            bottom: 40px;
-            right: 40px;
-            width: 60px;
-            height: 60px;
-            background-color: #0071bc; /* JVVNL blue */
-            border-radius: 50%;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-            cursor: pointer;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            z-index: 1000;
-            transition: width 0.3s ease, height 0.3s ease;
-        }
-
-        .chat-bubble img {
-            width: 36px;
-            height: 36px;
-        }
-
-        /* Chat window styling */
-        .chat-window {
-            position: fixed;
-            bottom: 110px;
-            right: 40px;
-            width: 360px;
-            height: 500px;
-            border-radius: 10px;
-            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
-            background-color: #e6f0ff;
-            display: none;
-            flex-direction: column;
-            overflow: hidden;
-            z-index: 1000;
-        }
-
-        /* Container where chatbot loads */
-        #customgpt_chat {
-            flex: 1;
-            background: #e6f0ff;
-        }
-    </style>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>TCOS-2021 Assistant Chatbot</title>
+  <style>
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background-color: #e0f0ff; /* Light blue color for the page */
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      min-height: 100vh;
+      padding: 20px;
+      box-sizing: border-box;
+    }
+    header {
+      max-width: 800px;
+      text-align: center;
+      margin-bottom: 40px;
+    }
+    header h1 {
+      color: #005ea8;
+      margin-bottom: 10px;
+    }
+    header p {
+      font-size: 1.1rem;
+      color: #333;
+      line-height: 1.5;
+    }
+    .logo-center {
+      margin: 30px 0;
+    }
+    .logo-center img {
+      width: 160px;
+      height: auto;
+      display: block;
+      margin: 0 auto;
+    }
+    /* Chat bubble button styling */
+    #chat-button {
+      position: fixed;
+      bottom: 20px;
+      right: 20px;
+      background-color: transparent;
+      border: none;
+      cursor: pointer;
+      outline: none;
+      z-index: 1000;
+      width: 60px;
+      height: 60px;
+      border-radius: 50%;
+      box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+      background-repeat: no-repeat;
+      background-position: center;
+      background-size: 70%;
+      background-image: url('https://user-gen-media-assets.s3.amazonaws.com/gpt4o_images/5bea36f9-9ea5-497c-8752-cc8eeabe2127.png'); /* JVVNL logo chat bubble */
+    }
+  </style>
 </head>
-
 <body>
-    <header>
-        <h1>TCOS-2021 Assistant Chatbot</h1>
-        <p>
-            The TCOS-2021 document covers critical technical and commercial operation standards that govern power utilities. This assistant chatbot helps you navigate the document, answer your questions, and guide you through relevant sections efficiently.
-        </p>
-    </header>
 
-    <div class="logo-center" aria-hidden="true"></div>
+  <header>
+    <h1>Welcome to TCOS-2021 Assistant Chatbot</h1>
+    <p>
+      The TCOS-2021 document outlines the framework and procedures for the Transmission and Coordination of System operations during the year 2021. This Assistant Chatbot is designed to help you navigate and understand the TCOS-2021 document, answer queries, and provide assistance efficiently.
+    </p>
+  </header>
 
-    <div class="chat-bubble" id="chatBubble" aria-label="Open TCOS-2021 Assistant Chatbot" role="button" tabindex="0">
-        <img src="https://upload.wikimedia.org/wikipedia/en/thumb/1/17/JVVNL_logo.svg/512px-JVVNL_logo.svg.png" alt="JVVNL Logo" />
-    </div>
+  <div class="logo-center">
+    <img src="https://user-gen-media-assets.s3.amazonaws.com/gpt4o_images/5bea36f9-9ea5-497c-8752-cc8eeabe2127.png" alt="JVVNL Logo" />
+  </div>
 
-    <div class="chat-window" id="chatWindow" aria-label="TCOS-2021 Assistant Chatbot Window">
-        <div id="customgpt_chat"></div>
-    </div>
+  <!-- Chat bubble button triggers the chatbot -->
+  <button id="chat-button" title="Chat with TCOS-2021 Assistant"></button>
 
-    <script src="https://cdn.customgpt.ai/js/embed.js" defer
-        div_id="customgpt_chat"
-        p_id="79457"
-        p_key="b05e435589da9408b916f4138682cfac"></script>
-
-    <script>
-        const chatBubble = document.getElementById('chatBubble');
-        const chatWindow = document.getElementById('chatWindow');
-
-        // Toggle chat window on bubble click
-        chatBubble.addEventListener('click', () => {
-            if (chatWindow.style.display === 'flex') {
-                chatWindow.style.display = 'none';
-            } else {
-                chatWindow.style.display = 'flex';
-            }
+  <!-- Chatbot scripts -->
+  <script defer src="https://cdn.customgpt.ai/js/chat.js"></script>
+  <script defer>
+    (function() {
+      function init() {
+        CustomGPT.init({
+          p_id: '79457',
+          p_key: 'b05e435589da9408b916f4138682cfac'
         });
+      }
+      if (document.readyState === 'complete') {
+        init();
+      } else {
+        window.addEventListener('load', init);
+      }
+      // Optional: Add click event to the chat button to open chatbot UI if applicable
+      document.getElementById('chat-button').addEventListener('click', function() {
+        if (CustomGPT && CustomGPT.open) {
+          CustomGPT.open();
+        }
+      });
+    })();
+  </script>
 
-        // Accessibility: toggle chat window on Enter or Space key on bubble
-        chatBubble.addEventListener('keydown', (event) => {
-            if (event.key === 'Enter' || event.key === ' ') {
-                event.preventDefault();
-                chatBubble.click();
-            }
-        });
-    </script>
 </body>
-
 </html>
+
