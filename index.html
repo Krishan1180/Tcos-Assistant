@@ -1,404 +1,140 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>TCOS-2021 Assistant Chatbot - JVVNL</title>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>TCOS-2021 Assistant Chatbot</title>
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
         body {
-            font-family: 'Arial', sans-serif;
-            background: linear-gradient(135deg, #e3f2fd 0%, #bbdefb 100%);
+            margin: 0;
+            font-family: Arial, sans-serif;
+            background: #e6f0ff; /* Light blue background */
+            display: flex;
+            flex-direction: column;
+            align-items: center;
             min-height: 100vh;
-            color: #333;
+            color: #003366;
         }
 
-        .container {
-            max-width: 1200px;
-            margin: 0 auto;
-            padding: 20px;
-        }
-
-        .header {
-            background: linear-gradient(135deg, #1976d2, #42a5f5);
-            color: white;
-            padding: 30px 0;
+        header {
+            margin-top: 2rem;
+            max-width: 800px;
             text-align: center;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
-            margin-bottom: 30px;
-            border-radius: 15px;
+            padding: 0 1rem;
         }
 
-        .header h1 {
-            font-size: 2.5rem;
-            margin-bottom: 10px;
-            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        header h1 {
+            margin-bottom: 0.25rem;
         }
 
-        .header p {
-            font-size: 1.2rem;
-            opacity: 0.9;
+        header p {
+            font-size: 1.1rem;
+            line-height: 1.5;
         }
 
-        .jvvnl-logo {
-            width: 80px;
-            height: 80px;
-            margin: 0 auto 20px;
-            background: white;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+        /* Centered JVVNL logo behind chat section */
+        .logo-center {
+            position: relative;
+            margin: 2rem 0;
+            width: 200px;
+            height: 200px;
+            opacity: 0.1;
+            background: url('https://upload.wikimedia.org/wikipedia/en/thumb/1/17/JVVNL_logo.svg/512px-JVVNL_logo.svg.png') no-repeat center center;
+            background-size: contain;
         }
 
-        .jvvnl-logo::before {
-            content: "JVVNL";
-            font-weight: bold;
-            color: #1976d2;
-            font-size: 14px;
-        }
-
-        .content {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 30px;
-            margin-bottom: 40px;
-        }
-
-        .info-section {
-            background: white;
-            padding: 30px;
-            border-radius: 15px;
-            box-shadow: 0 8px 25px rgba(0,0,0,0.1);
-            border-left: 5px solid #1976d2;
-        }
-
-        .info-section h2 {
-            color: #1976d2;
-            margin-bottom: 20px;
-            font-size: 1.8rem;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-
-        .info-section h2::before {
-            content: "⚡";
-            font-size: 1.5rem;
-        }
-
-        .info-section p {
-            line-height: 1.8;
-            margin-bottom: 15px;
-            color: #555;
-        }
-
-        .info-section ul {
-            margin-left: 20px;
-            color: #666;
-        }
-
-        .info-section ul li {
-            margin-bottom: 8px;
-            line-height: 1.6;
-        }
-
-        .chatbot-section {
-            background: white;
-            padding: 30px;
-            border-radius: 15px;
-            box-shadow: 0 8px 25px rgba(0,0,0,0.1);
-            text-align: center;
-            border: 2px solid #e3f2fd;
-        }
-
-        .chatbot-header {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 15px;
-            margin-bottom: 25px;
-        }
-
-        .chat-bubble-logo {
+        /* Chat bubble container fixed at bottom right */
+        .chat-bubble {
+            position: fixed;
+            bottom: 40px;
+            right: 40px;
             width: 60px;
             height: 60px;
-            background: linear-gradient(135deg, #1976d2, #42a5f5);
-            border-radius: 50% 50% 50% 10%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: white;
-            font-size: 24px;
-            box-shadow: 0 6px 15px rgba(25,118,210,0.3);
-            animation: pulse 2s infinite;
-        }
-
-        @keyframes pulse {
-            0%, 100% { transform: scale(1); }
-            50% { transform: scale(1.05); }
-        }
-
-        .chatbot-header h2 {
-            color: #1976d2;
-            font-size: 2rem;
-        }
-
-        .chatbot-container {
-            background: #f8fbff;
-            border-radius: 15px;
-            padding: 20px;
-            min-height: 500px;
-            position: relative;
-            border: 3px solid #e3f2fd;
-        }
-
-        .jvvnl-center-logo {
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            width: 120px;
-            height: 120px;
-            background: white;
+            background-color: #0071bc; /* JVVNL blue */
             border-radius: 50%;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            cursor: pointer;
             display: flex;
-            align-items: center;
             justify-content: center;
-            box-shadow: 0 8px 20px rgba(0,0,0,0.1);
-            opacity: 0.3;
-            z-index: 1;
+            align-items: center;
+            z-index: 1000;
+            transition: width 0.3s ease, height 0.3s ease;
         }
 
-        .jvvnl-center-logo::before {
-            content: "JVVNL";
-            font-weight: bold;
-            color: #1976d2;
-            font-size: 18px;
+        .chat-bubble img {
+            width: 36px;
+            height: 36px;
         }
 
+        /* Chat window styling */
+        .chat-window {
+            position: fixed;
+            bottom: 110px;
+            right: 40px;
+            width: 360px;
+            height: 500px;
+            border-radius: 10px;
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+            background-color: #e6f0ff;
+            display: none;
+            flex-direction: column;
+            overflow: hidden;
+            z-index: 1000;
+        }
+
+        /* Container where chatbot loads */
         #customgpt_chat {
-            position: relative;
-            z-index: 2;
-            min-height: 460px;
-            background: transparent;
-        }
-
-        .features {
-            background: white;
-            padding: 30px;
-            border-radius: 15px;
-            box-shadow: 0 8px 25px rgba(0,0,0,0.1);
-            margin-top: 30px;
-        }
-
-        .features h3 {
-            color: #1976d2;
-            margin-bottom: 20px;
-            font-size: 1.5rem;
-            text-align: center;
-        }
-
-        .feature-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-            gap: 20px;
-            margin-top: 20px;
-        }
-
-        .feature-item {
-            background: #f8fbff;
-            padding: 20px;
-            border-radius: 10px;
-            text-align: center;
-            border-left: 4px solid #1976d2;
-        }
-
-        .feature-item h4 {
-            color: #1976d2;
-            margin-bottom: 10px;
-        }
-
-        .footer {
-            text-align: center;
-            margin-top: 40px;
-            padding: 20px;
-            color: #666;
-            background: white;
-            border-radius: 10px;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
-        }
-
-        @media (max-width: 768px) {
-            .content {
-                grid-template-columns: 1fr;
-            }
-            
-            .header h1 {
-                font-size: 2rem;
-            }
-            
-            .chatbot-header h2 {
-                font-size: 1.5rem;
-            }
-            
-            .feature-grid {
-                grid-template-columns: 1fr;
-            }
-        }
-
-        .loading-indicator {
-            display: inline-block;
-            width: 20px;
-            height: 20px;
-            border: 3px solid #f3f3f3;
-            border-top: 3px solid #1976d2;
-            border-radius: 50%;
-            animation: spin 1s linear infinite;
-            margin-right: 10px;
-        }
-
-        @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
+            flex: 1;
+            background: #e6f0ff;
         }
     </style>
 </head>
+
 <body>
-    <div class="container">
-        <div class="header">
-            <div class="jvvnl-logo"></div>
-            <h1>TCOS-2021 Assistant Chatbot</h1>
-            <p>Jaipur Vidyut Vitran Nigam Limited</p>
-        </div>
+    <header>
+        <h1>TCOS-2021 Assistant Chatbot</h1>
+        <p>
+            The TCOS-2021 document covers critical technical and commercial operation standards that govern power utilities. This assistant chatbot helps you navigate the document, answer your questions, and guide you through relevant sections efficiently.
+        </p>
+    </header>
 
-        <div class="content">
-            <div class="info-section">
-                <h2>About TCOS-2021</h2>
-                <p><strong>Terms and Conditions of Supply of Electricity-2021 (TCOS-2021)</strong> is a comprehensive regulatory document issued by Jaipur Vidyut Vitran Nigam Limited (JVVNL) that governs electricity supply services in Rajasthan.</p>
-                
-                <p>This document came into force on <strong>February 25, 2021</strong> and covers:</p>
-                <ul>
-                    <li>New electricity connection procedures</li>
-                    <li>Consumer rights and obligations</li>
-                    <li>Billing and payment terms</li>
-                    <li>Load extension and reduction processes</li>
-                    <li>Connection transfer procedures</li>
-                    <li>Safety standards and technical specifications</li>
-                    <li>Dispute resolution mechanisms</li>
-                    <li>Standards of Performance (SOP)</li>
-                </ul>
-                
-                <p>TCOS-2021 ensures transparent, efficient, and consumer-friendly electricity distribution services across JVVNL's operational areas including Jaipur, Kota, and Ajmer divisions.</p>
-            </div>
+    <div class="logo-center" aria-hidden="true"></div>
 
-            <div class="info-section">
-                <h2>About JVVNL</h2>
-                <p><strong>Jaipur Vidyut Vitran Nigam Limited (JVVNL)</strong> is a government-owned electricity distribution company serving over 32 lakh consumers in Rajasthan, India.</p>
-                
-                <p><strong>Key Facts:</strong></p>
-                <ul>
-                    <li>Incorporated: July 1, 2000</li>
-                    <li>Headquarters: Jaipur, Rajasthan</li>
-                    <li>Service Areas: Jaipur, Kota, Ajmer, Alwar divisions</li>
-                    <li>Parent: Rajasthan State Electricity Board (RSEB)</li>
-                    <li>Services: Power distribution, billing, customer support</li>
-                </ul>
-                
-                <p>JVVNL is committed to providing reliable, quality power supply while promoting energy conservation and implementing government electricity schemes across its service territory.</p>
-            </div>
-        </div>
-
-        <div class="chatbot-section">
-            <div class="chatbot-header">
-                <div class="chat-bubble-logo">💬</div>
-                <h2>TCOS-2021 Assistant</h2>
-            </div>
-            
-            <div class="chatbot-container">
-                <div class="jvvnl-center-logo"></div>
-                <div id="customgpt_chat"></div>
-            </div>
-            
-            <p style="margin-top: 15px; color: #666; font-style: italic;">
-                <span class="loading-indicator" style="display: none;" id="loadingIndicator"></span>
-                Ask questions about TCOS-2021 regulations, electricity connections, billing, and JVVNL services
-            </p>
-        </div>
-
-        <div class="features">
-            <h3>Chatbot Features</h3>
-            <div class="feature-grid">
-                <div class="feature-item">
-                    <h4>🔌 Connection Queries</h4>
-                    <p>Get information about new connections, load changes, and transfer procedures</p>
-                </div>
-                <div class="feature-item">
-                    <h4>📋 TCOS-2021 Guidelines</h4>
-                    <p>Access detailed explanations of terms, conditions, and regulatory requirements</p>
-                </div>
-                <div class="feature-item">
-                    <h4>💡 Bill & Payment</h4>
-                    <p>Understand billing processes, payment methods, and tariff structures</p>
-                </div>
-                <div class="feature-item">
-                    <h4>🛡️ Consumer Rights</h4>
-                    <p>Learn about your rights, obligations, and complaint resolution procedures</p>
-                </div>
-                <div class="feature-item">
-                    <h4>📞 Customer Support</h4>
-                    <p>Get assistance with JVVNL services and Standards of Performance</p>
-                </div>
-                <div class="feature-item">
-                    <h4>⚡ Technical Standards</h4>
-                    <p>Information about safety requirements and technical specifications</p>
-                </div>
-            </div>
-        </div>
-
-        <div class="footer">
-            <p>&copy; 2025 Jaipur Vidyut Vitran Nigam Limited (JVVNL)</p>
-            <p>TCOS-2021 Assistant Chatbot | Powered by Advanced AI Technology</p>
-        </div>
+    <div class="chat-bubble" id="chatBubble" aria-label="Open TCOS-2021 Assistant Chatbot" role="button" tabindex="0">
+        <img src="https://upload.wikimedia.org/wikipedia/en/thumb/1/17/JVVNL_logo.svg/512px-JVVNL_logo.svg.png" alt="JVVNL Logo" />
     </div>
 
-    <!-- CustomGPT Chatbot Integration -->
-    <script src="https://cdn.customgpt.ai/js/embed.js" defer div_id="customgpt_chat" p_id="79457" p_key="b05e435589da9408b916f4138682cfac"></script>
-    
+    <div class="chat-window" id="chatWindow" aria-label="TCOS-2021 Assistant Chatbot Window">
+        <div id="customgpt_chat"></div>
+    </div>
+
+    <script src="https://cdn.customgpt.ai/js/embed.js" defer
+        div_id="customgpt_chat"
+        p_id="79457"
+        p_key="b05e435589da9408b916f4138682cfac"></script>
+
     <script>
-        // Show loading indicator when chatbot is initializing
-        document.addEventListener('DOMContentLoaded', function() {
-            const loadingIndicator = document.getElementById('loadingIndicator');
-            const chatContainer = document.getElementById('customgpt_chat');
-            
-            // Show loading indicator
-            loadingIndicator.style.display = 'inline-block';
-            
-            // Hide loading indicator after chatbot loads (estimated 3 seconds)
-            setTimeout(function() {
-                loadingIndicator.style.display = 'none';
-            }, 3000);
-            
-            // Add hover effects
-            const featureItems = document.querySelectorAll('.feature-item');
-            featureItems.forEach(item => {
-                item.addEventListener('mouseenter', function() {
-                    this.style.transform = 'translateY(-5px)';
-                    this.style.transition = 'transform 0.3s ease';
-                });
-                
-                item.addEventListener('mouseleave', function() {
-                    this.style.transform = 'translateY(0)';
-                });
-            });
+        const chatBubble = document.getElementById('chatBubble');
+        const chatWindow = document.getElementById('chatWindow');
+
+        // Toggle chat window on bubble click
+        chatBubble.addEventListener('click', () => {
+            if (chatWindow.style.display === 'flex') {
+                chatWindow.style.display = 'none';
+            } else {
+                chatWindow.style.display = 'flex';
+            }
+        });
+
+        // Accessibility: toggle chat window on Enter or Space key on bubble
+        chatBubble.addEventListener('keydown', (event) => {
+            if (event.key === 'Enter' || event.key === ' ') {
+                event.preventDefault();
+                chatBubble.click();
+            }
         });
     </script>
 </body>
+
 </html>
-Asset 1 of 1
